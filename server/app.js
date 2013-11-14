@@ -5,9 +5,14 @@ var events = require('events');
 var piEmitter = new events.EventEmitter();
 var sys = require('sys');
 var exec = require('child_process').exec;
+var port = 3000;
 
 app.use('/public', express.static('public'));
 app.use(express.bodyParser());
+
+app.get('/', function(req, res){
+  res.sendfile("public/index.html");
+});
 
 // Server Sent Events Stream
 app.get('/events', function(req, res){
@@ -18,7 +23,12 @@ app.get('/events', function(req, res){
   piEmitter.on('send', function(e){
     messenger.send(e.event, e.data);
   });
+});
 
+app.get('/mustacheFiles', function(req, res){
+  fs.readdir("public/mustaches", function(err, files){
+    res.json({files:files});
+  });
 });
 
 addRoute('/nextstache', 'nextstache');
@@ -37,7 +47,8 @@ app.post('/picture', function(req, res){
   });
 });
 
-app.listen(3000);
+app.listen(port);
+console.log("app running on port " + port);
 
 // Add a route that triggers a node event which will kick off a server sent event
 function addRoute(path, event){
