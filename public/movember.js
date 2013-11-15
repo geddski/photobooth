@@ -97,14 +97,22 @@
       http.onload = function (e) {
         console.log("status", e.target.status);
       };
-      console.log("canvas.toDataURL().slice(22,40):", canvas.toDataURL().slice(22,40));
-      console.log("canvas.toDataURL().slice(0,40):", canvas.toDataURL().slice(0,40));
-      var data = { 
-        // base64 string representation of the stache
-        picture: canvas.toDataURL("image/png").slice(22)
-      };
-      http.setRequestHeader('Content-Type', 'application/json');
-      http.send(JSON.stringify(data));
+
+    canvas.toBlob(function(blob){
+      // http.setRequestHeader('Content-Type', 'image/png');
+      upload(blob);
+    });
+
+    function upload(blobOrFile) {
+      var data = new FormData();
+      data.append('picture', blobOrFile, (Date.now()) + '.png')
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/picture', true);
+      xhr.onload = function(e) { console.log("done"); };
+
+      xhr.send(data);
+    }
+
     } 
   }
 }());

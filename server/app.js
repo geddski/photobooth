@@ -38,9 +38,9 @@ addRoute('/takepic', 'takepic');
 
 // accepts { picture: [base64 encoded image string] }
 app.post('/picture', function(req, res){
-  var img = new Buffer(req.body.picture, 'base64');
-  var imgFile = __dirname + '/pictures/stache-' + new Date().getTime() + '.jgp';
-  fs.writeFileSync(imgFile, img);
+  var pic = req.files.picture;
+  var imgFile = __dirname + '/pictures/stache-' + new Date().getTime() + '.png';
+  fs.renameSync(pic.path, imgFile);
   // print to default system printer
   exec('lpr ' + imgFile , function(error, stdout, stderr){
     res.send();
